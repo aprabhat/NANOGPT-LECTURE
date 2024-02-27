@@ -1,4 +1,6 @@
+
 # read the data file
+import torch
 with open('internet_archive_scifi_v3.txt', 'r', encoding='utf-8') as f:
     text = f.read()
 
@@ -21,5 +23,10 @@ decode = lambda l: ''.join([itos[i] for i in l])  # take a list of integers and 
 
 print(encode("hi there"))
 print(decode(encode("hi there")))
+
+# encode the entire dataset ad store it into a torch tensor
+data = torch.tensor(encode(text), dtype=torch.long)
+print(data.shape, data.dtype)
+print(data[:1000])
 
 
