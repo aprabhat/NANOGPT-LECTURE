@@ -1,6 +1,6 @@
-
 # read the data file
 import torch
+
 with open('internet_archive_scifi_v3.txt', 'r', encoding='utf-8') as f:
     text = f.read()
 
@@ -27,6 +27,9 @@ print(decode(encode("hi there")))
 # encode the entire dataset ad store it into a torch tensor
 data = torch.tensor(encode(text), dtype=torch.long)
 print(data.shape, data.dtype)
-print(data[:1000])
+print(data[:1000])  # how chars looks to GPT
 
-
+# split the dataset into train and validation sets
+n = int(0.9*len(data))
+train_data = data[:n]  # first 90%
+val_data = data[n:]  # rest 10%
