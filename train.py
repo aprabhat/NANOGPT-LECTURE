@@ -52,5 +52,45 @@ def get_batch(split):
     data1 = train_data if split == 'train' else val_data
     ix = torch.randint(len(data1) - block_size, (batch_size,))
     x = torch.stack([data1[i:i + block_size] for i in ix])
-    y = torch.stack([data1[i + 1, i + block_size + 1] for i in ix])
+    y = torch.stack([data1[i + 1:i + block_size + 1] for i in ix])
     return x, y
+
+
+xb, yb = get_batch('train')
+print('inputs:')
+print(xb.shape)
+print(xb)
+print('targets:')
+print(yb.shape)
+print(yb)
+
+print('---')
+
+for b in range(batch_size):
+    for t in range(block_size):
+        context = xb[b, :t + 1]
+        target = yb[b, t]
+        print(f"when inout is {context.tolist()} the target: {target}")
+
+import torch
+import torch.nn as nn
+from torch.nn import functional as F
+
+torch.manual_seed(1337)
+
+
+class BiGramLanguageModel(nn.Module):
+    def __init__(self, vocab_size):
+        super().__init__()
+        self.token_embedding_table = nn.Embedding(vocab_size, vocab_size)
+
+    def forward(self, idx, targets):
+        logits = self.token_embedding_table(idx)
+        loss = F.cross_entropy(logits, targets)
+        return logits, loss
+
+
+m = BiGramLanguageModel(vocab_size)
+logits, loss = m(xb, yb)
+print(loss.shape)
+print(logits.shape)
